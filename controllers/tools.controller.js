@@ -5,8 +5,12 @@ const getAllTools = (req, res) => {
 const addATool = (req, res) => {
   res.send("add a tool");
 };
+const getToolDetails = (req, res) => {
+  res.send("Tool Details route");
+};
 
 module.exports = {
   getAllTools,
   addATool,
+  getToolDetails,
 };
