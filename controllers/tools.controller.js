@@ -8,9 +8,17 @@ const addATool = (req, res) => {
 const getToolDetails = (req, res) => {
   res.send("Tool Details route");
 };
+const updateTool = (req, res) => {
+  res.send("Update tool");
+};
+const deleteTool = (req, res) => {
+  res.send("deleted tool");
+};
 
 module.exports = {
   getAllTools,
   addATool,
   getToolDetails,
+  updateTool,
+  deleteTool,
 };
