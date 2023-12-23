@@ -5,9 +5,21 @@ const app = express();
 const port = process.env.PORT || 5000;
 const toolsRoutes = require("./routes/v1/tools.route");
 const errorHandler = require("./middlewares/errorHandler");
+const { connectToServer } = require("./utils/dbConnect");
+
 app.use(cors());
 app.use(express.json());
 app.set("view engin", "ejs");
+
+connectToServer((err) => {
+  if (!err) {
+    app.listen(port, () => {
+      console.log(`Example app listening on port ${port}`);
+    });
+  } else {
+    console.log(err);
+  }
+});
 
 app.use("/api/v1/tools", toolsRoutes);
 
@@ -33,10 +45,6 @@ app.all("*", (req, res) => {
 });
 
 app.use(errorHandler);
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
 
 // ---> global error handler
 process.on("unhandledRejection", (error) => {
