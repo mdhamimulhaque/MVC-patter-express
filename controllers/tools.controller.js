@@ -1,7 +1,21 @@
+const { ObjectId } = require("mongodb");
 const { getDb } = require("../utils/dbConnect");
 
-const getAllTools = (req, res) => {
-  res.send("get all tools here ");
+const getAllTools = async (req, res, next) => {
+  try {
+    const db = getDb();
+    const { page, limit } = req.query;
+    const tools = await db
+      .collection("tools")
+      .find({})
+      .project({ _id: 0 })
+      .limit(+limit)
+      .skip(+page * limit)
+      .toArray();
+    res.status(200).json({ status: true, data: tools });
+  } catch (error) {
+    next(error);
+  }
 };
 
 const addATool = async (req, res, next) => {
@@ -18,7 +32,7 @@ const addATool = async (req, res, next) => {
         .send({ status: false, error: "Something went wrong!" });
     }
 
-    res.send({
+    res.status(200).json({
       success: true,
       message: `Tool added with id: ${result.insertedId}`,
     });
@@ -26,8 +40,25 @@ const addATool = async (req, res, next) => {
     next(error);
   }
 };
-const getToolDetails = (req, res) => {
-  res.send("Tool Details route");
+const getToolDetails = async (req, res, next) => {
+  try {
+    const db = getDb();
+    const id = req.params;
+    if (!ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .json({ status: false, error: "Not valid tool ID" });
+    }
+    const tool = await db.collection("tools").findOne({ _id: ObjectId(id) });
+    if (!tool) {
+      return res
+        .status(400)
+        .json({ status: false, error: "Couldn't find a tool with this id" });
+    }
+    res.status(200).json({ status: true, data: tool });
+  } catch (error) {
+    next(error);
+  }
 };
 const updateTool = (req, res) => {
   res.send("Update tool");
