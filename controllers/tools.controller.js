@@ -88,8 +88,28 @@ const updateTool = async (req, res, next) => {
     next(error);
   }
 };
-const deleteTool = (req, res) => {
-  res.send("deleted tool");
+const deleteTool = async (req, res, next) => {
+  try {
+    const db = getDb();
+    const id = req.params;
+    if (!ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .json({ status: false, error: "Not valid tool ID" });
+    }
+    const tool = await db.collection("tools").deleteOne({ _id: ObjectId(id) });
+    if (!tool.deletedCount) {
+      return res
+        .status(400)
+        .json({ status: false, error: "Couldn't delete a tool with this id" });
+    }
+    res.status(200).json({
+      status: true,
+      message: "Successfully deleted the tool",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 module.exports = {
