@@ -60,8 +60,33 @@ const getToolDetails = async (req, res, next) => {
     next(error);
   }
 };
-const updateTool = (req, res) => {
-  res.send("Update tool");
+const updateTool = async (req, res, next) => {
+  try {
+    const db = getDb();
+    const id = req.params;
+    if (!ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .json({ status: false, error: "Not valid tool ID" });
+    }
+    const tool = await db.collection("tools").updateOne(
+      { _id: ObjectId(id) },
+      {
+        $set: req.body,
+      }
+    );
+    if (!tool.modifiedCount) {
+      return res
+        .status(400)
+        .json({ status: false, error: "Couldn't update a tool with this id" });
+    }
+    res.status(200).json({
+      status: true,
+      message: "Successfully updated the tool",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 const deleteTool = (req, res) => {
   res.send("deleted tool");
